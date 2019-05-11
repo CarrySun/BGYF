@@ -55,20 +55,23 @@ exports.addUnits = async ctx => {
 }
 
 exports.delUnits = async ctx => {
-    let id = ctx.params.id;
-    await unitModel.deleteUnit(id)
-        .then(() => {
-            ctx.body = {
-                code:200,
-                message:'删除成功'
-            }
-        })
-        .catch(err => {
-            ctx.body = {
-                code: 500,
-                message: err
-            }
-        })
+    let ids = ctx.request.body.ids;
+    for(let i in ids) {
+        await unitModel.deleteUnit([ids[i]])
+            .then(() => {
+               
+            })
+            .catch(err => {
+                ctx.body = {
+                    code: 500,
+                    message: err
+                }
+            })
+    }
+    ctx.body = {
+        code:200,
+        message:'删除成功'
+    }
 }
 
 exports.updateUnits = async ctx => {
@@ -105,4 +108,109 @@ exports.getUnits = async ctx => {
             message: err,
         }
     })
+}
+
+exports.getOfficesByUnitId = async ctx => {
+    let id = ctx.query.id;
+    await unitModel.findOfficeByUnitId([id])
+        .then(result => {
+            ctx.body = {
+                code: 200,
+                message: '查询成功',
+                data: result
+            }
+        }).catch(err => {
+            ctx.body = {
+                code: 500,
+                message: err,
+            }
+        })
+}
+
+exports.getJobsByUnitId = async ctx => {
+    let id = ctx.query.id;
+    await unitModel.findJobByUnitId([id])
+        .then(result => {
+            ctx.body = {
+                code: 200,
+                message: '查询成功',
+                data: result
+            }
+        }).catch(err => {
+            ctx.body = {
+                code: 500,
+                message: err,
+            }
+        })
+}
+
+exports.getRoomsByUnitId = async ctx => {
+    let id = ctx.query.id;
+    let office_ids = []
+    await unitModel.findOfficeByUnitId([id])
+        .then(res => {
+            for(let i in res) {
+                office_ids.push(res[i].id)
+            }
+        }).catch(err => {
+            ctx.body = {
+                code: 500,
+                message: err,
+            }
+        })
+    let data = []
+    for(let i in office_ids) {
+        await unitModel.findRoomsByOffice([office_ids[i]])
+            .then(res => {
+                for(let j in res) {
+                    data.push(res[j])
+                }
+            }).catch(err => {
+                ctx.body = {
+                    code: 500,
+                    message: err,
+                }
+            })
+    }
+    ctx.body = {
+        code: 200,
+        message: '查询成功',
+        data: data
+    }
+}
+
+exports.getUsersByUnitId = async ctx => {
+    let id = ctx.query.id;
+    let user_ids = []
+    await unitModel.findUsersByUnitId([id])
+        .then(res => {
+            for(let i in res) {
+                user_ids.push(res[i].id)
+            }
+        }).catch(err => {
+            ctx.body = {
+                code: 500,
+                message: err,
+            }
+        })
+    let data = []
+    for(let i in user_ids) {
+        await unitModel.findUserById([user_ids[i]])
+            .then(res => {
+                console.log(res)
+                for(let j in res) {
+                    data.push(res[j])
+                }
+            }).catch(err => {
+                ctx.body = {
+                    code: 500,
+                    message: err,
+                }
+            })
+    }
+    ctx.body = {
+        code: 200,
+        message: '查询成功',
+        data: data
+    }
 }

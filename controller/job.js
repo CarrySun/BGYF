@@ -19,19 +19,23 @@ exports.addJobs = async ctx => {
 }
 
 exports.delJobs = async ctx => {
-    let id = ctx.params.id;
-    await jobModel.deleteJob(id)
-        .then(() => {
-            ctx.body = {
-                code:200,
-                message:'删除成功'
-            }
-        }).catch(err => {
-            ctx.body = {
-                code: 500,
-                message: err
-            }
-        })
+    let ids = ctx.request.body.ids;
+    for(let i in ids) {
+        await jobModel.deleteJob([ids[i]])
+            .then(() => {
+                
+            }).catch(err => {
+                ctx.body = {
+                    code: 500,
+                    message: err
+                }
+            })
+    }
+    ctx.body = {
+        code:200,
+        message:'删除成功'
+    }
+
 }
 
 exports.updateJobs = async ctx => {

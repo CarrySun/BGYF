@@ -23,19 +23,22 @@ exports.addUsers = async ctx => {
 }
 
 exports.delUsers = async ctx => {
-    let id = ctx.params.id;
-    await userModel.deleteUser(id)
+    let ids = ctx.request.body.ids;
+    for(let i in ids) {
+        await userModel.deleteUser([ids[i]])
         .then(() => {
-            ctx.body = {
-                code:200,
-                message:'删除成功'
-            }
+            
         }).catch(err => {
             ctx.body = {
                 code: 500,
                 message: err
             }
         })
+    }
+    ctx.body = {
+        code:200,
+        message:'删除成功'
+    }
 }
 
 exports.updateUsers = async ctx => {
