@@ -1,5 +1,5 @@
 
-const jobModel = require('../lib/mysql.js')
+const jobModel = require('../sql/job.js')
 
 exports.addJobs = async ctx => {
     let name = ctx.request.body.name;
