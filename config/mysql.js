@@ -34,8 +34,6 @@ let unit =
     `create table if not exists unit(
       id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
       name VARCHAR(100) NOT NULL COMMENT '单位名称',
-      jobs VARCHAR(100) NOT NULL COMMENT '岗位信息',
-      rooms VARCHAR(100) NOT NULL COMMENT '房间信息',
       excessive INT default 0 COMMENT '超标'
     ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;`
 
@@ -62,6 +60,27 @@ let room =
       foreign key(office_id) references office(id)
     ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;`
 
+let unit_job =
+    `create table if not exists unit_job(
+      id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+      unit_id INT NOT NULL COMMENT '单位id',
+      job_id INT NOT NULL COMMENT '岗位id',
+      foreign key(unit_id) references unit(id),
+      foreign key(job_id) references job(id)
+    ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;`
+
+let unit_room =
+    `create table if not exists unit_room(
+      id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+      unit_id INT NOT NULL COMMENT '单位id',
+      office_id INT NOT NULL COMMENT '办公楼id',
+      room_id INT NOT NULL COMMENT '房间id',
+      foreign key(unit_id) references unit(id),
+      foreign key(office_id) references office(id),
+      foreign key(room_id) references room(id)
+    ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;`
+
+
 let user =
     `create table if not exists user(
       id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -78,7 +97,6 @@ let user =
       foreign key(job_id) references job(id)
     ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;`
 
-    
 let createTable = ( sql ) => {
   return query( sql, [] )
 }
@@ -88,6 +106,8 @@ createTable(unit)
 createTable(job)
 createTable(office)
 createTable(room)
+createTable(unit_job)
+createTable(unit_room)
 createTable(user)
 
 module.exports = query
