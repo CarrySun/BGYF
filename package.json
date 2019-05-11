@@ -1,0 +1,27 @@
+{
+  "name": "BGYF",
+  "version": "1.0.0",
+  "description": "blog",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "dev": "supervisor --harmony index",
+    "test": "./node_modules/mocha/bin/mocha --harmony test"
+  },
+  "author": "sjl",
+  "license": "MIT",
+  "dependencies": {
+    "config-lite": "^2.0.0",
+    "koa": "^2.5.0",
+    "koa-bodyparser": "^4.2.0",
+    "koa-logger": "^3.2.0",
+    "koa-router": "^7.4.0",
+    "mysql": "^2.13.0"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^4.0.1"
+  }
+}
