@@ -20,11 +20,28 @@ exports.addJobs = async ctx => {
 
 exports.delJobs = async ctx => {
     let ids = ctx.request.body.ids;
+    let unDelIds = []
+    let unDelData = []
     for(let i in ids) {
         await jobModel.deleteJob([ids[i]])
             .then(() => {
-                
-            }).catch(err => {
+            })
+            .catch(err => {
+                if(err.code == 'ER_ROW_IS_REFERENCED_2') {
+                    unDelIds.push(ids[i])
+                }
+                ctx.body = {
+                    code: 500,
+                    message: err
+                }
+            })
+    }
+    for(let i in unDelIds) {
+        await jobModel.findJobById([unDelIds[i]])
+            .then(res => {
+                unDelData.push(res[0].name)
+            })
+            .catch(err => {
                 ctx.body = {
                     code: 500,
                     message: err
@@ -33,9 +50,9 @@ exports.delJobs = async ctx => {
     }
     ctx.body = {
         code:200,
-        message:'删除成功'
+        message:'删除成功',
+        data: unDelData
     }
-
 }
 
 exports.updateJobs = async ctx => {

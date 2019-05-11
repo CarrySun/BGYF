@@ -56,10 +56,26 @@ exports.addUnits = async ctx => {
 
 exports.delUnits = async ctx => {
     let ids = ctx.request.body.ids;
+    let unDelIds = []
+    let unDelData = []
     for(let i in ids) {
         await unitModel.deleteUnit([ids[i]])
             .then(() => {
-               
+            })
+            .catch(err => {
+                if(err.code == 'ER_ROW_IS_REFERENCED_2') {
+                    unDelIds.push(ids[i])
+                }
+                ctx.body = {
+                    code: 500,
+                    message: err
+                }
+            })
+    }
+    for(let i in unDelIds) {
+        await unitModel.findUnitById([unDelIds[i]])
+            .then(res => {
+                unDelData.push(res[0].name)
             })
             .catch(err => {
                 ctx.body = {
@@ -70,10 +86,10 @@ exports.delUnits = async ctx => {
     }
     ctx.body = {
         code:200,
-        message:'删除成功'
+        message:'删除成功',
+        data: unDelData
     }
 }
-
 exports.updateUnits = async ctx => {
   let name = ctx.request.body.name;
   let id = ctx.request.body.id;
@@ -197,7 +213,6 @@ exports.getUsersByUnitId = async ctx => {
     for(let i in user_ids) {
         await unitModel.findUserById([user_ids[i]])
             .then(res => {
-                console.log(res)
                 for(let j in res) {
                     data.push(res[j])
                 }

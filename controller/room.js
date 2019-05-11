@@ -22,10 +22,26 @@ exports.addRooms = async ctx => {
 
 exports.delRooms = async ctx => {
     let ids = ctx.request.body.ids;
+    let unDelIds = []
+    let unDelData = []
     for(let i in ids) {
         await roomModel.deleteRoom([ids[i]])
             .then(() => {
-               
+            })
+            .catch(err => {
+                if(err.code == 'ER_ROW_IS_REFERENCED_2') {
+                    unDelIds.push(ids[i])
+                }
+                ctx.body = {
+                    code: 500,
+                    message: err
+                }
+            })
+    }
+    for(let i in unDelIds) {
+        await roomModel.findRoomById([unDelIds[i]])
+            .then(res => {
+                unDelData.push(res[0].name)
             })
             .catch(err => {
                 ctx.body = {
@@ -36,9 +52,11 @@ exports.delRooms = async ctx => {
     }
     ctx.body = {
         code:200,
-        message:'删除成功'
+        message:'删除成功',
+        data: unDelData
     }
 }
+
 
 exports.updateRooms = async ctx => {
   let id = ctx.request.body.id;
@@ -82,7 +100,6 @@ exports.getUsersByRoomId = async ctx => {
     let user_ids = []
     await roomModel.findUsersByRoomId([id])
         .then(res => {
-            console.log(res)
             for(let i in res) {
                 user_ids.push(res[i].id)
             }
@@ -96,7 +113,6 @@ exports.getUsersByRoomId = async ctx => {
     for(let i in user_ids) {
         await roomModel.findUserById([user_ids[i]])
             .then(res => {
-                console.log(res)
                 for(let j in res) {
                     data.push(res[j])
                 }
@@ -111,5 +127,108 @@ exports.getUsersByRoomId = async ctx => {
         code: 200,
         message: '查询成功',
         data: data
+    }
+}
+
+exports.alarmRoom = async ctx => {
+    let rooms = []
+    let excessive_list = []
+    await roomModel.findAllRoom()
+        .then(res => {
+            for(let i in res) {
+                rooms.push(res[i])
+            }
+        })
+        .catch(err => {
+            ctx.body = {
+                code: 500,
+                message: err,
+            }
+        })
+    for(let k in rooms) {
+        let user_area = 0
+        await roomModel.findUsersByRoomId([rooms[k].id])
+            .then(res => {
+                for(let i in res) {
+                    user_area += res[i].job_area
+                }
+            }).catch(err => {
+                ctx.body = {
+                    code: 500,
+                    message: err,
+                }
+            })
+        
+        if(rooms[k].area < user_area) {
+            rooms[k].excessive = 1
+            excessive_list.push(rooms[k])
+        } else {
+            rooms[k].excessive = 0
+        }
+        await roomModel.updateExcessive([rooms[k].excessive, rooms[k].id])
+            .then(res => {
+            }).catch(err => {
+                ctx.body = {
+                    code: 500,
+                    message: err,
+                }
+            })
+    }
+    ctx.body = {
+        code: 200,
+        message: "",
+        data: excessive_list
+    }
+}
+
+
+exports.alarmUnit = async ctx => {
+    let rooms = []
+    let excessive_list = []
+    await roomModel.findAllRoom()
+        .then(res => {
+            for(let i in res) {
+                rooms.push(res[i])
+            }
+        })
+        .catch(err => {
+            ctx.body = {
+                code: 500,
+                message: err,
+            }
+        })
+    for(let k in rooms) {
+        let user_area = 0
+        await roomModel.findUsersByRoomId([rooms[k].id])
+            .then(res => {
+                for(let i in res) {
+                    user_area += res[i].job_area
+                }
+            }).catch(err => {
+                ctx.body = {
+                    code: 500,
+                    message: err,
+                }
+            })
+        
+        if(rooms[k].area < user_area) {
+            rooms[k].excessive = 1
+            excessive_list.push(rooms[k])
+        } else {
+            rooms[k].excessive = 0
+        }
+        await roomModel.updateExcessive([rooms[k].excessive, rooms[k].id])
+            .then(res => {
+            }).catch(err => {
+                ctx.body = {
+                    code: 500,
+                    message: err,
+                }
+            })
+    }
+    ctx.body = {
+        code: 200,
+        message: "",
+        data: excessive_list
     }
 }

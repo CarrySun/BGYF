@@ -20,10 +20,26 @@ exports.addOffices = async ctx => {
 
 exports.delOffices = async ctx => {
     let ids = ctx.request.body.ids;
+    let unDelIds = []
+    let unDelData = []
     for(let i in ids) {
         await officeModel.deleteOffice([ids[i]])
             .then(() => {
-                
+            })
+            .catch(err => {
+                if(err.code == 'ER_ROW_IS_REFERENCED_2') {
+                    unDelIds.push(ids[i])
+                }
+                ctx.body = {
+                    code: 500,
+                    message: err
+                }
+            })
+    }
+    for(let i in unDelIds) {
+        await officeModel.findOfficeById([unDelIds[i]])
+            .then(res => {
+                unDelData.push(res[0].name)
             })
             .catch(err => {
                 ctx.body = {
@@ -34,7 +50,8 @@ exports.delOffices = async ctx => {
     }
     ctx.body = {
         code:200,
-        message:'删除成功'
+        message:'删除成功',
+        data: unDelData
     }
 }
 
