@@ -30,7 +30,7 @@ async function isExcessive(roomId){
     } else {
         room.excessive = 0
     }
-    await userModel.updateExcessive([room.excessive, room.id])
+    await userModel.updateRoomExcessive([room.excessive, room.id])
         .then(res => {
         }).catch(err => {
             ctx.body = {
@@ -46,7 +46,8 @@ exports.addUsers = async ctx => {
     let unit_id = ctx.request.body.unit_id;
     let room_id = ctx.request.body.room_id;
     let job_id = ctx.request.body.job_id;
-    await userModel.insertUser([name, sex, phone, unit_id, room_id, job_id])
+    let office_id = ctx.request.body.office_id;
+    await userModel.insertUser([name, sex, phone, unit_id, office_id, room_id, job_id])
       .then(() => {
         isExcessive(room_id)
           ctx.body = {
@@ -119,6 +120,7 @@ exports.updateUsers = async ctx => {
     let unit_id = ctx.request.body.unit_id;
     let room_id = ctx.request.body.room_id;
     let job_id = ctx.request.body.job_id;
+    let office_id = ctx.request.body.office_id;
     
     let oldRoomId
     await userModel.findUserById([id])
@@ -130,7 +132,7 @@ exports.updateUsers = async ctx => {
                 message: err
             }
         })
-    await userModel.updateUser([name, sex, phone, unit_id, room_id, job_id, id])
+    await userModel.updateUser([name, sex, phone, unit_id, office_id, room_id, job_id, id])
         .then(() => {
             isExcessive(room_id)
         }).catch(err => {

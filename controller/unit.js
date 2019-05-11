@@ -229,3 +229,68 @@ exports.getUsersByUnitId = async ctx => {
         data: data
     }
 }
+
+exports.alarmUnit = async ctx => {
+    let rooms = []
+    let excessive_list = []
+    await unitModel.findAllRoom()
+        .then(res => {
+            for(let i in res) {
+                rooms.push(res[i])
+            }
+        })
+        .catch(err => {
+            ctx.body = {
+                code: 500,
+                message: err,
+            }
+        })
+    for(let k in rooms) {
+        let user_area = 0
+        await unitModel.findUsersByRoomId([rooms[k].id])
+            .then(res => {
+                for(let i in res) {
+                    user_area += res[i].job_area
+                }
+            }).catch(err => {
+                ctx.body = {
+                    code: 500,
+                    message: err,
+                }
+            })
+        
+        if(rooms[k].area < user_area) {
+            rooms[k].excessive = 1
+            excessive_list.push(rooms[k])
+        } else {
+            rooms[k].excessive = 0
+        }
+        await unitModel.updateRoomExcessive([rooms[k].excessive, rooms[k].id])
+            .then(res => {
+            }).catch(err => {
+                ctx.body = {
+                    code: 500,
+                    message: err,
+                }
+            })
+    }
+    let units = []
+    // var office = {}
+    // for(let i in rooms) {
+    //     await unitModel.updateUnitByOffice([room[i].id, ])
+    //         .then(res => {
+    //             units = res
+    //         }).catch(err => {
+    //             ctx.body = {
+    //                 code: 500,
+    //                 message: err,
+    //             }
+    //         })
+    // }
+    // console.log(units)
+    ctx.body = {
+        code: 200,
+        message: "",
+        data: units
+    }
+}

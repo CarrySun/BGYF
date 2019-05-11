@@ -19,4 +19,6 @@ router.get('/unit/getJob', controller.getJobsByUnitId)
 // 根据单位查人员
 router.get('/unit/getUser', controller.getUsersByUnitId)
 
+router.get('/unit/alarm', controller.alarmUnit)
+
 module.exports = router
