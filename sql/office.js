@@ -29,6 +29,6 @@ exports.findOfficeById =  (value) => {
 }
 
 exports.findRoomsByOffice = (value) => {
-  let _sql = `select * from room where office_id = ?`
+  let _sql = `select room.*, office.name as office_name from room left join office on office.id = room.office_id where office_id = ?`
   return query( _sql, value)
 }
