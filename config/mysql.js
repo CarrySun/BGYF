@@ -40,8 +40,12 @@ let unit =
 let job =
     `create table if not exists job(
       id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+<<<<<<< HEAD
       name VARCHAR(100) NOT NULL COMMENT '岗位名称',
       area float(5,2) DEFAULT NULL COMMENT '办公用房面积'
+=======
+      name VARCHAR(100) NOT NULL COMMENT '岗位名称'
+>>>>>>> eb3af5042cc51b3afea1a50bba32c72de6c970a5
     ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;`
 
 let office =
