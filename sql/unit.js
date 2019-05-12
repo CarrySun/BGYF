@@ -24,6 +24,16 @@ exports.deleteUnit = ( value ) => {
   return query( _sql, value)
 }
 
+exports.deleteUnitRoom = ( value ) => {
+  let _sql = `delete from unit_room where unit_id=?;`
+  return query( _sql, value)
+}
+
+exports.deleteUnitJob = ( value ) => {
+  let _sql = `delete from unit_job where unit_id=?;`
+  return query( _sql, value)
+}
+
 exports.updateUnit = ( value ) => {
   let _sql = `update unit set name=? where id=?;`
   return query( _sql, value )

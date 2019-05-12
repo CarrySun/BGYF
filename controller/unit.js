@@ -60,23 +60,17 @@ exports.delUnits = async ctx => {
     let unDelIds = []
     let unDelData = []
     for(let i in ids) {
-        await unitModel.deleteUnit([ids[i]])
+        await unitModel.deleteUnitRoom([ids[i]])
             .then(() => {
             })
             .catch(err => {
-                if(err.code == 'ER_ROW_IS_REFERENCED_2') {
-                    unDelIds.push(ids[i])
-                }
                 ctx.body = {
                     code: 500,
                     message: err
                 }
             })
-    }
-    for(let i in unDelIds) {
-        await unitModel.findUnitById([unDelIds[i]])
-            .then(res => {
-                unDelData.push(res[0].name)
+        await unitModel.deleteUnitJob([ids[i]])
+            .then(() => {
             })
             .catch(err => {
                 ctx.body = {
@@ -84,30 +78,82 @@ exports.delUnits = async ctx => {
                     message: err
                 }
             })
-    }
-    ctx.body = {
-        code:200,
-        message:'删除成功',
-        data: unDelData
+        
+        await unitModel.deleteUnit([ids[i]])
+            .then(() => {
+                ctx.body = {
+                    code:200,
+                    message:'删除成功',
+                    data: unDelData
+                }
+            })
+            .catch(err => {
+                ctx.body = {
+                    code: 500,
+                    message: err
+                }
+            })
     }
 }
 
 exports.updateUnits = async ctx => {
-  let name = ctx.request.body.name;
-  let id = ctx.request.body.id;
-  await unitModel.updateUnit([name, id])
-    .then(() => {
-        ctx.body = {
-            code:200,
-            message:'修改成功'
-        }
-    })
-    .catch(err => {
-        ctx.body = {
-            code: 500,
-            message: err
-        }
-    })
+    let id = ctx.request.body.id;
+    let name = ctx.request.body.name;
+    let rooms  = ctx.request.body.rooms;
+    let jobs  = ctx.request.body.jobs;
+    await unitModel.deleteUnitRoom([id])
+        .then(() => {
+        })
+        .catch(err => {
+            ctx.body = {
+                code: 500,
+                message: err
+            }
+        })
+    await unitModel.deleteUnitJob([id])
+        .then(() => {
+        })
+        .catch(err => {
+            ctx.body = {
+                code: 500,
+                message: err
+            }
+        })
+    await unitModel.updateUnit([name, id])
+        .then(() => {
+        })
+        .catch(err => {
+            ctx.body = {
+                code: 500,
+                message: err
+            }
+        })
+    for(let i in rooms) {
+        await unitModel.insertUnitOffice([id, rooms[i].office_id, rooms[i].room_id])
+            .then(res => {
+            })
+            .catch(err => {
+                ctx.body = {
+                    code: 500,
+                    message: err
+                }
+            })
+    }
+    for(let i in jobs) {
+        await unitModel.insertUnitJob([id, jobs[i].id])
+        .then(res => {
+        })
+        .catch(err => {
+            ctx.body = {
+                code: 500,
+                message: err
+            }
+        })
+    }
+    ctx.body = {
+        code:200,
+        message:'修改成功'
+    }
 }
 
 exports.getUnits = async ctx => {
