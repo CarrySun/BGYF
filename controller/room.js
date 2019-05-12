@@ -1,5 +1,5 @@
 
-const roomModel = require('../lib/mysql.js')
+const roomModel = require('../sql/room.js')
 
 exports.addRooms = async ctx => {
     let name = ctx.request.body.name;
@@ -95,41 +95,6 @@ exports.getRooms = async ctx => {
     })
 }
 
-exports.getUsersByRoomId = async ctx => {
-    let id = ctx.query.id;
-    let user_ids = []
-    await roomModel.findUsersByRoomId([id])
-        .then(res => {
-            for(let i in res) {
-                user_ids.push(res[i].id)
-            }
-        }).catch(err => {
-            ctx.body = {
-                code: 500,
-                message: err,
-            }
-        })
-    let data = []
-    for(let i in user_ids) {
-        await roomModel.findUserById([user_ids[i]])
-            .then(res => {
-                for(let j in res) {
-                    data.push(res[j])
-                }
-            }).catch(err => {
-                ctx.body = {
-                    code: 500,
-                    message: err,
-                }
-            })
-    }
-    ctx.body = {
-        code: 200,
-        message: '查询成功',
-        data: data
-    }
-}
-
 exports.alarmRoom = async ctx => {
     let rooms = []
     let excessive_list = []
@@ -165,7 +130,7 @@ exports.alarmRoom = async ctx => {
         } else {
             rooms[k].excessive = 0
         }
-        await roomModel.updateExcessive([rooms[k].excessive, rooms[k].id])
+        await roomModel.updateRoomExcessive([rooms[k].excessive, rooms[k].id])
             .then(res => {
             }).catch(err => {
                 ctx.body = {

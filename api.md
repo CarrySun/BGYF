@@ -319,6 +319,7 @@ name|人员名称
 sex|性别
 phone|电话
 unit_id|单位id
+office_id|办公室id
 room_id|房间id
 job_id|岗位id
 
@@ -349,6 +350,7 @@ id|id
 name|人员名称
 sex|性别
 phone|电话
+office_id|办公室id
 unit_id|单位id
 room_id|房间id
 job_id|岗位id

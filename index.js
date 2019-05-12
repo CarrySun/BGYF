@@ -1,6 +1,7 @@
 const Koa = require('koa');
 const bodyParser = require('koa-bodyparser');
 const config = require('./config/default.js');
+const query = require('./config/mysql.js');
 var logger = require("koa-logger");
 const app = new Koa()
 

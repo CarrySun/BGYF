@@ -1,5 +1,5 @@
 
-const officeModel = require('../lib/mysql.js')
+const officeModel = require('../sql/office.js')
 
 exports.addOffices = async ctx => {
     let name = ctx.request.body.name;
@@ -75,23 +75,6 @@ exports.updateOffices = async ctx => {
 
 exports.getOffices = async ctx => {
     await officeModel.findAllOffice()
-        .then(result => {
-            ctx.body = {
-                code: 200,
-                message: '查询成功',
-                data: result
-            }
-        }).catch(err => {
-            ctx.body = {
-                code: 500,
-                message: err,
-            }
-        })
-}
-
-exports.getUnitsByOffice = async ctx => {
-    let id = ctx.query.id;
-    await officeModel.findUnitsByOffice([id])
         .then(result => {
             ctx.body = {
                 code: 200,
