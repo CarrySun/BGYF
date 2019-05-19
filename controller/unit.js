@@ -26,7 +26,7 @@ exports.addUnits = async ctx => {
             }
         })
     for(let i in rooms) {
-        await unitModel.insertUnitOffice([unit_id, rooms[i].office_id, rooms[i].room_id])
+        await unitModel.insertUnitRoom([unit_id, rooms[i], rooms[i]])
             .then(() => {
                 
             })
@@ -38,7 +38,7 @@ exports.addUnits = async ctx => {
             })
     }
     for(let i in jobs) {
-        await unitModel.insertUnitJob([unit_id, jobs[i].id])
+        await unitModel.insertUnitJob([unit_id, jobs[i]])
         .then(() => {
             
         })
@@ -129,7 +129,7 @@ exports.updateUnits = async ctx => {
             }
         })
     for(let i in rooms) {
-        await unitModel.insertUnitOffice([id, rooms[i].office_id, rooms[i].room_id])
+        await unitModel.insertUnitRoom([id, rooms[i], rooms[i]])
             .then(res => {
             })
             .catch(err => {
@@ -140,7 +140,7 @@ exports.updateUnits = async ctx => {
             })
     }
     for(let i in jobs) {
-        await unitModel.insertUnitJob([id, jobs[i].id])
+        await unitModel.insertUnitJob([id, jobs[i]])
         .then(res => {
         })
         .catch(err => {
@@ -295,12 +295,13 @@ exports.getUsersByUnitId = async ctx => {
 }
 
 exports.alarmUnit = async ctx => {
-    let rooms = []
-    let excessive_list = []
-    await roomModel.findAllRoom()
+    let units = []
+    let excessive_units = []
+
+    await unitModel.findAllUnit()
         .then(res => {
             for(let i in res) {
-                rooms.push(res[i])
+                units.push(res[i])
             }
         })
         .catch(err => {
@@ -309,113 +310,64 @@ exports.alarmUnit = async ctx => {
                 message: err,
             }
         })
-    for(let k in rooms) {
-        let user_area = 0
-        await roomModel.findUsersByRoomId([rooms[k].id])
-            .then(res => {
-                for(let i in res) {
-                    user_area += res[i].job_area
-                }
-            }).catch(err => {
-                ctx.body = {
-                    code: 500,
-                    message: err,
-                }
-            })
-        
-        if(rooms[k].area < user_area) {
-            rooms[k].excessive = 1
-            excessive_list.push(rooms[k])
-        } else {
-            rooms[k].excessive = 0
-        }
-        await roomModel.updateRoomExcessive([rooms[k].excessive, rooms[k].id])
-            .then(res => {
-            }).catch(err => {
-                ctx.body = {
-                    code: 500,
-                    message: err,
-                }
-            })
-    }
-    let office = {}
-    for(let i in rooms) {
-        await unitModel.findUnitsByRoom([rooms[i].id])
-            .then(res => {
-                let unit_id = res[0].unit_id
-                let excessive = rooms[i].excessive
-                if(office.hasOwnProperty(unit_id)) {
-                    if(excessive == 1) {
-                        office[unit_id] = 1
-                    }
-                } else {
-                    office[unit_id] = excessive
-                }
-            }).catch(err => {
-                ctx.body = {
-                    code: 500,
-                    message: err,
-                }
-            })
-    }
-    
-    for(var key in office) {
-        await unitModel.updateUnitExcessive([office[key], key])
-            .then(res => {
-            }).catch(err => {
-                ctx.body = {
-                    code: 500,
-                    message: err,
-                }
-            })
-    }
 
-    let units = []
-    await unitModel.findExcessive()
-        .then(res => {
-            units = res
-        }).catch(err => {
-            ctx.body = {
-                code: 500,
-                message: err,
-            }
-        })
-    // 获取 office
-    let result = []
-    for(let i in units) {
-        let jobs = []
-        let obj = {
-            id: units[i].id,
-            name: units[i].name,
-            excessive: units[i].excessive
-        }
-        await unitModel.findJobByUnitId([units[i].id])
-            .then(res => {
-                jobs = res
-            }).catch(err => {
-                ctx.body = {
-                    code: 500,
-                    message: err,
-                }
-            })
-
+    for(var i in units) {
+        units[i].excessive_rooms = []
         let rooms = []
-        await unitModel.findRoomByUnitId([units[i].id])
+        await unitModel.findRoomByUnitId(units[i].id)
             .then(res => {
                 rooms = res
+            })
+        
+        for(let j = 0; j < rooms.length; j++) {
+            let users = []
+            let user_area = 0
+            await roomModel.findUsersByRoomId([rooms[j].room_id])
+                .then(res => {
+                    users = res
+                    for(let i in res) {
+                        user_area += res[i].job_area
+                    }
+                }).catch(err => {
+                    ctx.body = {
+                        code: 500,
+                        message: err,
+                    }
+                })
+            if(rooms[j].room_area < user_area) {
+                rooms[j].excessive = 1
+                rooms[j].users = users
+                units[i].excessive_rooms.push(rooms[j])
+            } else {
+                rooms[j].excessive = 0
+            }
+            await roomModel.updateRoomExcessive([rooms[j].excessive, rooms[j].room_id])
+                .then(res => {
+                }).catch(err => {
+                    ctx.body = {
+                        code: 500,
+                        message: err,
+                    }
+                })
+        }
+        if(units[i].excessive_rooms.length == 0) {
+            units[i].excessive = 0
+        } else {
+            units[i].excessive = 1
+            excessive_units.push(units[i])
+        }
+        await unitModel.updateUnitExcessive([units[i].excessive, units[i].id])
+            .then(res => {
             }).catch(err => {
                 ctx.body = {
                     code: 500,
                     message: err,
                 }
             })
-        obj.jobs = jobs
-        obj.rooms = rooms
-        result.push(obj)
     }
     ctx.body = {
         code: 200,
         message: '查询成功',
-        data: result
+        data: excessive_units
     }
 }

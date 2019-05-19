@@ -113,18 +113,6 @@ name|办公楼名称
 
 - 参数
 
-### 根据办公楼查单位
-
-- 接口：/office/getUnit
-
-- 方式：GET
-
-- 参数
-
-字段|说明
---|--
-id|办公楼id
-
 ### 根据办公楼查房间
 
 - 接口：/office/getRoom
@@ -187,18 +175,6 @@ office_id|办公楼id
 - 方式：GET
 
 - 参数
-
-### 根据房间查用户
-
-- 接口：/room/getUser
-
-- 方式：GET
-
-- 参数
-
-字段|说明
---|--
-id|房间id
 
 
 ## unit 单位
@@ -266,9 +242,9 @@ job_ids|数组|岗位ids
 --|--
 id|单位id
 
-### 根据单位查房间
+### 根据 单位和办公楼 查询房间
 
-- 接口：/unit/getRoom
+- 接口：/unit/getOfficeRoom
 
 - 方式：GET
 
@@ -276,7 +252,8 @@ id|单位id
 
 字段|说明
 --|--
-id|单位id
+unit_id|单位id
+office_id|办公楼id
 
 
 ### 根据单位查岗位
@@ -302,6 +279,14 @@ id|单位id
 字段|说明
 --|--
 id|单位id
+
+### 单位报警
+
+- 接口：/unit/alarm
+
+- 方式：GET
+
+- 参数
 
 ## user 人员
 

@@ -56,8 +56,8 @@ let room =
       id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
       name VARCHAR(100) NOT NULL COMMENT '房间名称',
       area float(5,2) DEFAULT NULL COMMENT '面积',
-      office_id INT,
       excessive INT default 0 COMMENT '超标',
+      office_id INT,
       foreign key(office_id) references office(id)
     ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;`
 

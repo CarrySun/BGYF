@@ -35,7 +35,7 @@ exports.insertRoom = ( value ) => {
   }
   
   exports.findUsersByRoomId =  (value) => {
-    let _sql = `select user.*,job.area as job_area from user left join job on job.id=user.job_id where user.room_id = ?;`
+    let _sql = `select user.*,job.area as job_area,job.name as job_name from user left join job on job.id=user.job_id where user.room_id = ?;`
     return query( _sql, value)
   }
   

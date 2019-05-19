@@ -8,6 +8,4 @@ router.post('/room/del', controller.delRooms)
 router.post('/room/update', controller.updateRooms)
 router.get('/room/get', controller.getRooms)
 
-router.get('/room/alarm', controller.alarmRoom)
-
 module.exports = router

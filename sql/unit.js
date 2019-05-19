@@ -9,8 +9,8 @@ exports.insertUnit = ( value ) => {
   return query( _sql, value )
 }
 
-exports.insertUnitOffice = ( value ) => {
-  let _sql = "insert into unit_room set unit_id=?,office_id=?,room_id=?;"
+exports.insertUnitRoom = ( value ) => {
+  let _sql = "insert into unit_room set unit_id=?, room_id=?, office_id = (select office_id from room where id = ?);"
   return query( _sql, value )
 }
 
@@ -65,7 +65,7 @@ exports.findUnitById =  (value) => {
 
 
 exports.findRoomByUnitId = (value) => {
-  let _sql = `select office.id as office_id, office.name as office_name,room.id as room_id, room.name as room_name from unit_room left join office on unit_room.office_id=office.id left join room on unit_room.room_id=room.id where unit_room.unit_id = ?;`
+  let _sql = `select office.id as office_id, office.name as office_name,room.id as room_id, room.name as room_name,room.area as room_area from unit_room left join office on unit_room.office_id=office.id left join room on unit_room.room_id=room.id where unit_room.unit_id = ?;`
   return query( _sql, value)
 }
 
