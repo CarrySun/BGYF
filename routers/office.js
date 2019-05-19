@@ -10,5 +10,6 @@ router.get('/office/get', controller.getOffices)
 
 // 根据办公楼查房间
 router.get('/office/getRoom', controller.getRoomsByOffice)
+router.get('/office/getUnChooseRoom', controller.getUnChooseRoomsByOffice)
 
 module.exports = router

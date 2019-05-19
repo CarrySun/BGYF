@@ -105,3 +105,20 @@ exports.getRoomsByOffice = async ctx => {
             }
         })
 }
+
+exports.getUnChooseRoomsByOffice = async ctx => {
+    let id = ctx.query.id;
+    await officeModel.findUnChooseRoomsByOffice([id])
+        .then(result => {
+            ctx.body = {
+                code: 200,
+                message: '查询成功',
+                data: result
+            }
+        }).catch(err => {
+            ctx.body = {
+                code: 500,
+                message: err,
+            }
+        })
+}

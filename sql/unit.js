@@ -10,7 +10,7 @@ exports.insertUnit = ( value ) => {
 }
 
 exports.insertUnitRoom = ( value ) => {
-  let _sql = "insert into unit_room set unit_id=?, room_id=?, office_id = (select office_id from room where id = ?);"
+  let _sql = "update room set unit_id=? where id = ?;"
   return query( _sql, value )
 }
 
@@ -25,7 +25,7 @@ exports.deleteUnit = ( value ) => {
 }
 
 exports.deleteUnitRoom = ( value ) => {
-  let _sql = `delete from unit_room where unit_id=?;`
+  let _sql = `update room set unit_id = null where unit_id = ?;`
   return query( _sql, value)
 }
 
@@ -36,11 +36,6 @@ exports.deleteUnitJob = ( value ) => {
 
 exports.updateUnit = ( value ) => {
   let _sql = `update unit set name=? where id=?;`
-  return query( _sql, value )
-}
-
-exports.findUnitsByRoom = (value) => {
-  let _sql = `select * from unit_room where room_id = ?;`
   return query( _sql, value )
 }
 
@@ -63,9 +58,8 @@ exports.findUnitById =  (value) => {
   return query( _sql, value)
 }
 
-
 exports.findRoomByUnitId = (value) => {
-  let _sql = `select office.id as office_id, office.name as office_name,room.id as room_id, room.name as room_name,room.area as room_area from unit_room left join office on unit_room.office_id=office.id left join room on unit_room.room_id=room.id where unit_room.unit_id = ?;`
+  let _sql = `select office.id as office_id, office.name as office_name,room.* from room left join office on room.office_id=office.id where unit_id = ?`
   return query( _sql, value)
 }
 
@@ -75,12 +69,12 @@ exports.findJobByUnitId = (value) => {
 }
 
 exports.findOfficeByUnitId = (value) => {
-  let _sql = `select office.id as id, office.name as name from unit_room left join office on unit_room.office_id=office.id where unit_room.unit_id = ? group by office.id;`
+  let _sql = `select office.id as id, office.name as name from room left join office on room.office_id=office.id where unit_room.unit_id = ? group by office.id;`
   return query( _sql, value)
 }
 
 exports.findRoomByUnitIdAndOfficeId = (value) => {
-  let _sql = `select room.id as id, room.name as name from unit_room left join room on unit_room.room_id=room.id where unit_room.unit_id = ? and unit_room.office_id = ?;`
+  let _sql = `select * from room where unit_id = ? and office_id = ?;`
   return query( _sql, value)
 }
 

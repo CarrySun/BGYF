@@ -26,9 +26,8 @@ exports.addUnits = async ctx => {
             }
         })
     for(let i in rooms) {
-        await unitModel.insertUnitRoom([unit_id, rooms[i], rooms[i]])
+        await unitModel.insertUnitRoom([unit_id, rooms[i]])
             .then(() => {
-                
             })
             .catch(err => {
                 ctx.body = {
@@ -129,7 +128,7 @@ exports.updateUnits = async ctx => {
             }
         })
     for(let i in rooms) {
-        await unitModel.insertUnitRoom([id, rooms[i], rooms[i]])
+        await unitModel.insertUnitRoom([unit_id, rooms[i]])
             .then(res => {
             })
             .catch(err => {
@@ -322,7 +321,7 @@ exports.alarmUnit = async ctx => {
         for(let j = 0; j < rooms.length; j++) {
             let users = []
             let user_area = 0
-            await roomModel.findUsersByRoomId([rooms[j].room_id])
+            await roomModel.findUsersByRoomId([rooms[j].id])
                 .then(res => {
                     users = res
                     for(let i in res) {
@@ -334,14 +333,14 @@ exports.alarmUnit = async ctx => {
                         message: err,
                     }
                 })
-            if(rooms[j].room_area < user_area) {
+            if(rooms[j].area < user_area) {
                 rooms[j].excessive = 1
                 rooms[j].users = users
                 units[i].excessive_rooms.push(rooms[j])
             } else {
                 rooms[j].excessive = 0
             }
-            await roomModel.updateRoomExcessive([rooms[j].excessive, rooms[j].room_id])
+            await roomModel.updateRoomExcessive([rooms[j].excessive, rooms[j].id])
                 .then(res => {
                 }).catch(err => {
                     ctx.body = {

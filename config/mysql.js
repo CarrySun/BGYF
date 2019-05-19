@@ -52,12 +52,13 @@ let office =
 
 
 let room =
-    `create table if not exists room(
+    `create table if not exists room (
       id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
       name VARCHAR(100) NOT NULL COMMENT '房间名称',
       area float(5,2) DEFAULT NULL COMMENT '面积',
       excessive INT default 0 COMMENT '超标',
       office_id INT,
+      unit_id INT,
       foreign key(office_id) references office(id)
     ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;`
 
@@ -69,18 +70,6 @@ let unit_job =
       foreign key(unit_id) references unit(id),
       foreign key(job_id) references job(id)
     ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;`
-
-let unit_room =
-    `create table if not exists unit_room(
-      id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-      unit_id INT NOT NULL COMMENT '单位id',
-      office_id INT NOT NULL COMMENT '办公楼id',
-      room_id INT NOT NULL COMMENT '房间id',
-      foreign key(unit_id) references unit(id),
-      foreign key(office_id) references office(id),
-      foreign key(room_id) references room(id)
-    ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;`
-
 
 let user =
     `create table if not exists user(
@@ -108,7 +97,6 @@ createTable(job)
 createTable(office)
 createTable(room)
 createTable(unit_job)
-createTable(unit_room)
 createTable(user)
 
 module.exports = query
