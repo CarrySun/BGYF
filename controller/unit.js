@@ -101,7 +101,8 @@ exports.updateUnits = async ctx => {
     let rooms  = ctx.request.body.rooms;
     let jobs  = ctx.request.body.jobs;
     await unitModel.deleteUnitRoom([id])
-        .then(() => {
+        .then(res => {
+            // console.log(res)
         })
         .catch(err => {
             ctx.body = {
@@ -110,7 +111,8 @@ exports.updateUnits = async ctx => {
             }
         })
     await unitModel.deleteUnitJob([id])
-        .then(() => {
+        .then(res => {
+            // console.log(res)
         })
         .catch(err => {
             ctx.body = {
@@ -119,7 +121,8 @@ exports.updateUnits = async ctx => {
             }
         })
     await unitModel.updateUnit([name, id])
-        .then(() => {
+        .then(res => {
+            // console.log(res)
         })
         .catch(err => {
             ctx.body = {
@@ -127,9 +130,11 @@ exports.updateUnits = async ctx => {
                 message: err
             }
         })
+
     for(let i in rooms) {
-        await unitModel.insertUnitRoom([unit_id, rooms[i]])
+        await unitModel.insertUnitRoom([id, rooms[i]])
             .then(res => {
+                // console.log(res)
             })
             .catch(err => {
                 ctx.body = {
@@ -141,6 +146,7 @@ exports.updateUnits = async ctx => {
     for(let i in jobs) {
         await unitModel.insertUnitJob([id, jobs[i]])
         .then(res => {
+            // console.log(res)
         })
         .catch(err => {
             ctx.body = {

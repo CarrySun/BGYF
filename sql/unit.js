@@ -69,7 +69,7 @@ exports.findJobByUnitId = (value) => {
 }
 
 exports.findOfficeByUnitId = (value) => {
-  let _sql = `select office.id as id, office.name as name from room left join office on room.office_id=office.id where unit_room.unit_id = ? group by office.id;`
+  let _sql = `select office.id as id, office.name as name from room left join office on room.office_id=office.id where room.unit_id = ? group by office.id;`
   return query( _sql, value)
 }
 
