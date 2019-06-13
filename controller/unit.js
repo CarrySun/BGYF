@@ -56,42 +56,60 @@ exports.addUnits = async ctx => {
 
 exports.delUnits = async ctx => {
     let ids = ctx.request.body.ids;
-    let unDelIds = []
     let unDelData = []
     for(let i in ids) {
-        await unitModel.deleteUnitRoom([ids[i]])
-            .then(() => {
-            })
-            .catch(err => {
+        let user_ids = []
+        await unitModel.findUsersByUnitId([ids])
+            .then(res => {
+                for(let i in res) {
+                    user_ids.push(res[i].id)
+                }
+            }).catch(err => {
                 ctx.body = {
                     code: 500,
-                    message: err
+                    message: err,
                 }
             })
-        await unitModel.deleteUnitJob([ids[i]])
-            .then(() => {
-            })
-            .catch(err => {
-                ctx.body = {
-                    code: 500,
-                    message: err
-                }
-            })
-        
-        await unitModel.deleteUnit([ids[i]])
-            .then(() => {
-                ctx.body = {
-                    code:200,
-                    message:'删除成功',
-                    data: unDelData
-                }
-            })
-            .catch(err => {
-                ctx.body = {
-                    code: 500,
-                    message: err
-                }
-            })
+        if(user_ids.length > 0) {
+            ctx.body = {
+                code: 500,
+                message: "无法删除，请清空单位内员工后再试"
+            }
+        } else {
+            await unitModel.deleteUnitRoom([ids[i]])
+                .then(() => {
+                })
+                .catch(err => {
+                    ctx.body = {
+                        code: 500,
+                        message: err
+                    }
+                })
+            await unitModel.deleteUnitJob([ids[i]])
+                .then(() => {
+                })
+                .catch(err => {
+                    ctx.body = {
+                        code: 500,
+                        message: err
+                    }
+                })
+            
+            await unitModel.deleteUnit([ids[i]])
+                .then(() => {
+                    ctx.body = {
+                        code:200,
+                        message:'删除成功',
+                        data: unDelData
+                    }
+                })
+                .catch(err => {
+                    ctx.body = {
+                        code: 500,
+                        message: err
+                    }
+                })
+        }
     }
 }
 
